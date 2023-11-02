@@ -27,7 +27,7 @@ public class FlightFilterImpl implements FlightFilter {
      *
      * @param flight
      */
-    private boolean isValidFlight(Flight flight) {
+    boolean isValidFlight(Flight flight) {
         List<Segment> segments = flight.getSegments();
 
         if (isDepartureNotBeforeCurrentTime(segments)) return false;
