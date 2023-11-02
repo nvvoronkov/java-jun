@@ -31,8 +31,15 @@ public class FlightFilterImpl implements FlightFilter {
         List<Segment> segments = flight.getSegments();
 
         for (Segment segment : segments) {
-            if (segment.getDepartureDate().isBefore(LocalDateTime.now()) ||
-                segment.getArrivalDate().isBefore(segment.getDepartureDate())) {
+            if (segment.getDepartureDate().isBefore(LocalDateTime.now())) {
+                System.out.println("Flights with departure before current time: " + segments);
+                return false;
+            }
+        }
+
+        for (Segment segment : segments) {
+            if (segment.getArrivalDate().isBefore(segment.getDepartureDate())) {
+                System.out.println("Flights with invalid segments (arrival before departure): " + segments);
                 return false;
             }
         }
@@ -45,6 +52,7 @@ public class FlightFilterImpl implements FlightFilter {
             Duration groundTime = Duration.between(arrival1, departure2);
             totalGroundTime = totalGroundTime.plus(groundTime);
             if (totalGroundTime.toHours() > 2) {
+                System.out.println("Flights with more than 2 hours ground time: " + segments);
                 return false;
             }
         }
