@@ -30,20 +30,16 @@ public class FlightFilterImpl implements FlightFilter {
     private boolean isValidFlight(Flight flight) {
         List<Segment> segments = flight.getSegments();
 
-        for (Segment segment : segments) {
-            if (segment.getDepartureDate().isBefore(LocalDateTime.now())) {
-                System.out.println("Flights with departure before current time: " + segments);
-                return false;
-            }
-        }
+        if (isDepartureNotBeforeCurrentTime(segments)) return false;
 
-        for (Segment segment : segments) {
-            if (segment.getArrivalDate().isBefore(segment.getDepartureDate())) {
-                System.out.println("Flights with invalid segments (arrival before departure): " + segments);
-                return false;
-            }
-        }
+        if (isArrivalNotBeforeDeparture(segments)) return false;
 
+        if (!isFlightMoreThan2HoursOnGround(segments)) return false;
+
+        return true;
+    }
+
+    private static boolean isFlightMoreThan2HoursOnGround(List<Segment> segments) {
         Duration totalGroundTime = Duration.ZERO;
 
         for (int i = 0; i < segments.size() - 1; i++) {
@@ -57,5 +53,25 @@ public class FlightFilterImpl implements FlightFilter {
             }
         }
         return true;
+    }
+
+    private static boolean isArrivalNotBeforeDeparture(List<Segment> segments) {
+        for (Segment segment : segments) {
+            if (segment.getArrivalDate().isBefore(segment.getDepartureDate())) {
+                System.out.println("Flights with invalid segments (arrival before departure): " + segments);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isDepartureNotBeforeCurrentTime(List<Segment> segments) {
+        for (Segment segment : segments) {
+            if (segment.getDepartureDate().isBefore(LocalDateTime.now())) {
+                System.out.println("Flights with departure before current time: " + segments);
+                return true;
+            }
+        }
+        return false;
     }
 }
